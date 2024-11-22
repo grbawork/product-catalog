@@ -66,18 +66,28 @@ const Home = () => {
   const handlePriceRangeChange = (range) => {
     setPriceRange(range)
 
+    if (range === '') {
+      // Reset to show all products
+      setFilteredProducts(products)
+      setCurrentPage(1) // Reset pagination to the first page
+      return
+    }
+
+    // Extract min and max values from the selected range
     const [min, max] = range.split('-').map((value) => parseInt(value, 10))
 
+    // Filter products based on price range
     const filteredByPrice = products.filter((product) => {
       if (max) {
         return product.price >= min && product.price <= max
       }
-      return product.price >= min
+      return product.price >= min // For "100$+"
     })
 
     setFilteredProducts(filteredByPrice)
-    setCurrentPage(1)
+    setCurrentPage(1) // Reset pagination to the first page
   }
+
 
   const handleSortChange = (option) => {
     setSortOption(option)
