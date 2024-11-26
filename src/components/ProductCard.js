@@ -4,8 +4,18 @@ import { saveToLocalStorage, getFromLocalStorage } from '../utils/localStorage'
 const ProductCard = ({ product, onDetailsClick }) => {
   const handleAddToCart = () => {
     const cart = getFromLocalStorage('cart') || []
-    saveToLocalStorage('cart', [...cart, product])
-    alert('Product added to cart!')
+    const existingProduct = cart.find((item) => item.id === product.id)
+
+    if (existingProduct) {
+      // If product already exists, increase its quantity
+      existingProduct.quantity += 1
+    } else {
+      // Add new product with quantity 1
+      cart.push({ ...product, quantity: 1 })
+    }
+
+    saveToLocalStorage('cart', cart)
+    alert(`${product.title} added to cart!`)
   }
 
   return (
@@ -14,8 +24,10 @@ const ProductCard = ({ product, onDetailsClick }) => {
       <h3>{product.title}</h3>
       <p>{product.description.slice(0, 100)}...</p>
       <p>Price: ${product.price}</p>
-      <button onClick={() => onDetailsClick(product)}>Details</button>
-      <button onClick={handleAddToCart}>Add to Cart</button>
+      <div className='product-card-buttons'>
+        <button onClick={() => onDetailsClick(product)}>Details</button>
+        <button onClick={handleAddToCart}>Add to Cart</button>
+      </div>
     </div>
   )
 }

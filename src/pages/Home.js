@@ -6,7 +6,9 @@ import {
 } from '../services/api'
 import Pagination from '../components/Pagination'
 import Modal from '../components/Modal'
+import ProductCard from '../components/ProductCard' // Import the reusable component
 import '../styles/main.scss'
+import { saveToLocalStorage, getFromLocalStorage } from '../utils/localStorage'
 
 const Home = () => {
   const [products, setProducts] = useState([])
@@ -22,14 +24,11 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch products
         const productsData = await getProducts()
         setProducts(productsData)
         setFilteredProducts(productsData)
 
-        // Fetch categories
         const categoriesData = await getCategories()
-        console.log('Categories fetched:', categoriesData) // Debug output
         setCategories(categoriesData)
       } catch (error) {
         console.error('Error fetching data:', error)
@@ -39,10 +38,15 @@ const Home = () => {
     fetchData()
   }, [])
 
+  const handleAddToCart = (product) => {
+    const cart = getFromLocalStorage('cart') || []
+    saveToLocalStorage('cart', [...cart, product])
+    alert(`${product.title} added to cart!`)
+  }
+
 
   const handleCategoryChange = async (category) => {
     setSelectedCategory(category)
-
     let filteredByCategory = products
     if (category !== '') {
       const categoryProducts = await getProductsByCategory(category)
@@ -65,29 +69,23 @@ const Home = () => {
 
   const handlePriceRangeChange = (range) => {
     setPriceRange(range)
-
     if (range === '') {
-      // Reset to show all products
       setFilteredProducts(products)
-      setCurrentPage(1) // Reset pagination to the first page
+      setCurrentPage(1)
       return
     }
 
-    // Extract min and max values from the selected range
     const [min, max] = range.split('-').map((value) => parseInt(value, 10))
-
-    // Filter products based on price range
     const filteredByPrice = products.filter((product) => {
       if (max) {
         return product.price >= min && product.price <= max
       }
-      return product.price >= min // For "100$+"
+      return product.price >= min
     })
 
     setFilteredProducts(filteredByPrice)
-    setCurrentPage(1) // Reset pagination to the first page
+    setCurrentPage(1)
   }
-
 
   const handleSortChange = (option) => {
     setSortOption(option)
@@ -164,15 +162,12 @@ const Home = () => {
         {filteredProducts
           .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
           .map((product) => (
-            <div key={product.id} className='product-card'>
-              <img src={product.thumbnail} alt={product.title} />
-              <h3>{product.title}</h3>
-              <p>{product.description.slice(0, 100)}...</p>
-              <p className='price'>${product.price}</p>
-              <button onClick={() => setSelectedProduct(product)}>
-                Details
-              </button>
-            </div>
+            <ProductCard
+              key={product.id}
+              product={product}
+              onDetailsClick={setSelectedProduct}
+              onAddToCart={handleAddToCart}
+            />
           ))}
       </div>
 
@@ -186,6 +181,7 @@ const Home = () => {
       {selectedProduct && (
         <Modal
           product={selectedProduct}
+          onAddToCart={handleAddToCart} // Pass Add to Cart functionality to Modal
           onClose={() => setSelectedProduct(null)}
         />
       )}

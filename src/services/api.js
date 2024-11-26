@@ -73,15 +73,20 @@ export const deleteUser = async (id) => {
 }
 
 // Login user
-export const loginUser = async (credentials) => {
+export const loginUser = async (username, password) => {
   try {
-    const response = await axios.post(`${BASE_URL}/auth/login`, credentials)
-    return response.data
+    const response = await axios.post(`${BASE_URL}/user/login`, {
+      username,
+      password,
+      expiresInMins: 30, // Optional
+    })
+    return response.data // Returns token and user data if successful
   } catch (error) {
-    console.error('Error logging in user:', error)
-    return null
+    console.error('Login error:', error)
+    throw new Error('Invalid username or password')
   }
 }
+
 
 // Fetch a single product by ID
 export const getProductById = async (id) => {
@@ -136,4 +141,13 @@ export const deleteProduct = async (id) => {
     console.error('Error deleting product:', error)
     return null
   }
+}
+
+export const getFromLocalStorage = (key) => {
+  const data = localStorage.getItem(key)
+  return data ? JSON.parse(data) : null
+}
+
+export const saveToLocalStorage = (key, value) => {
+  localStorage.setItem(key, JSON.stringify(value))
 }
