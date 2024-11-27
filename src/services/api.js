@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const BASE_URL = 'https://dummyjson.com'
 
-// Fetch all products
+// Product Management
 export const getProducts = async (limit = 30, skip = 0) => {
   try {
     const response = await axios.get(
@@ -15,7 +15,6 @@ export const getProducts = async (limit = 30, skip = 0) => {
   }
 }
 
-// Fetch all categories
 export const getCategories = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/products/categories`)
@@ -26,7 +25,6 @@ export const getCategories = async () => {
   }
 }
 
-// Fetch products by category
 export const getProductsByCategory = async (category) => {
   try {
     const response = await axios.get(
@@ -39,7 +37,7 @@ export const getProductsByCategory = async (category) => {
   }
 }
 
-// Fetch users
+// User Management
 export const getUsers = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/users`)
@@ -50,7 +48,6 @@ export const getUsers = async () => {
   }
 }
 
-// Search users
 export const searchUsers = async (query) => {
   try {
     const response = await axios.get(`${BASE_URL}/users/search?q=${query}`)
@@ -61,7 +58,6 @@ export const searchUsers = async (query) => {
   }
 }
 
-// Delete a user
 export const deleteUser = async (id) => {
   try {
     const response = await axios.delete(`${BASE_URL}/users/${id}`)
@@ -72,7 +68,7 @@ export const deleteUser = async (id) => {
   }
 }
 
-// Login user
+// Login Management
 export const loginUser = async (username, password) => {
   try {
     const response = await axios.post(`${BASE_URL}/user/login`, {
@@ -80,7 +76,24 @@ export const loginUser = async (username, password) => {
       password,
       expiresInMins: 30, // Optional
     })
-    return response.data // Returns token and user data if successful
+
+    console.log('Login response:', response.data) // Log the full response for debugging
+
+    const { accessToken, refreshToken } = response.data // Correct key: accessToken
+    console.log('Extracted tokens:', accessToken, refreshToken) // Debug tokens
+
+    // Save tokens to local storage if they exist
+    if (accessToken) {
+      saveToLocalStorage('authToken', accessToken)
+    } else {
+      console.error('Access token is undefined.')
+    }
+
+    if (refreshToken) {
+      saveToLocalStorage('refreshToken', refreshToken)
+    }
+
+    return response.data
   } catch (error) {
     console.error('Login error:', error)
     throw new Error('Invalid username or password')
@@ -88,66 +101,112 @@ export const loginUser = async (username, password) => {
 }
 
 
-// Fetch a single product by ID
-export const getProductById = async (id) => {
+// Cart Management
+export const getCartFromAPI = async (token) => {
   try {
-    const response = await axios.get(`${BASE_URL}/products/${id}`)
-    return response.data
+    const response = await axios.get(`${BASE_URL}/cart`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    return response.data.items || [] // Ensure an array is returned
   } catch (error) {
-    console.error('Error fetching product by ID:', error)
-    return null
-  }
-}
-
-// Search products by query
-export const searchProducts = async (query) => {
-  try {
-    const response = await axios.get(`${BASE_URL}/products/search?q=${query}`)
-    return response.data.products
-  } catch (error) {
-    console.error('Error searching products:', error)
+    console.error('Error fetching cart from API:', error)
     return []
   }
 }
 
-// Add a new product (simulation)
-export const addProduct = async (product) => {
+
+export const syncCartToAPI = async (token, cartItems) => {
   try {
-    const response = await axios.post(`${BASE_URL}/products/add`, product)
-    return response.data
+    await axios.post(
+      `${BASE_URL}/cart`,
+      { items: cartItems },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
   } catch (error) {
-    console.error('Error adding product:', error)
-    return null
+    console.error('Error syncing cart to API:', error)
   }
 }
 
-// Update a product by ID (simulation)
-export const updateProduct = async (id, updatedData) => {
+
+// Token Management
+export const refreshToken = async () => {
+  const refreshToken = getFromLocalStorage('refreshToken')
+  if (!refreshToken) {
+    throw new Error('No refresh token available')
+  }
+
   try {
-    const response = await axios.put(`${BASE_URL}/products/${id}`, updatedData)
-    return response.data
+    const response = await axios.post(`${BASE_URL}/auth/refresh`, {
+      token: refreshToken,
+    })
+    const { token, refreshToken: newRefreshToken } = response.data
+
+    // Save updated tokens
+    saveToLocalStorage('authToken', token)
+    saveToLocalStorage('refreshToken', newRefreshToken)
+
+    return token
   } catch (error) {
-    console.error('Error updating product:', error)
-    return null
+    console.error('Error refreshing token:', error)
+    throw error
   }
 }
 
-// Delete a product by ID (simulation)
-export const deleteProduct = async (id) => {
-  try {
-    const response = await axios.delete(`${BASE_URL}/products/${id}`)
-    return response.data
-  } catch (error) {
-    console.error('Error deleting product:', error)
-    return null
-  }
-}
-
+// Utilities
 export const getFromLocalStorage = (key) => {
   const data = localStorage.getItem(key)
-  return data ? JSON.parse(data) : null
+  try {
+    return data ? JSON.parse(data) : null
+  } catch (error) {
+    console.warn(`Invalid JSON in localStorage key "${key}". Clearing it.`)
+    localStorage.removeItem(key)
+    return null
+  }
 }
+
+
 
 export const saveToLocalStorage = (key, value) => {
   localStorage.setItem(key, JSON.stringify(value))
 }
+
+export const getAuthenticatedUser = async (token) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/user/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+      credentials: 'include', // Include cookies if needed
+    })
+    return response.data // Return user data
+  } catch (error) {
+    console.error('Error fetching authenticated user:', error)
+    return null
+  }
+}
+
+
+// Axios Instance with Token Refreshing
+const axiosInstance = axios.create()
+
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true
+      try {
+        const newToken = await refreshToken()
+        axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`
+        originalRequest.headers['Authorization'] = `Bearer ${newToken}`
+        return axiosInstance(originalRequest)
+      } catch (err) {
+        console.error('Token refresh failed:', err)
+        return Promise.reject(err)
+      }
+    }
+    return Promise.reject(error)
+  }
+)
+
+export default axiosInstance

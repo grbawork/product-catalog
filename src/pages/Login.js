@@ -1,52 +1,58 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { loginUser } from '../services/api' // Ensure this points to your API functions
+import { useNavigate } from 'react-router-dom' // Import useNavigate
+import { loginUser } from '../services/api'
 
 const Login = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
-  const navigate = useNavigate() // React Router hook for navigation
+  const navigate = useNavigate() // Initialize useNavigate
 
-  const handleLogin = async (e) => {
-    e.preventDefault()
-    setErrorMessage('') // Reset any previous error message
-    try {
-      const result = await loginUser(username, password) // Call API function
-      if (result) {
-        localStorage.setItem('token', result.token) // Save token to localStorage
-        alert('Login successful!')
-        navigate('/cart') // Redirect to cart after login
-      } else {
-        setErrorMessage('Invalid username or password.')
-      }
-    } catch (error) {
-      console.error('Login error:', error)
-      setErrorMessage('An error occurred. Please try again.')
+const handleLogin = async (e) => {
+  e.preventDefault()
+
+  try {
+    const response = await loginUser(username, password) // Call login API
+    if (response.accessToken) {
+      console.log('Login successful. Redirecting to User Page...')
+      navigate('/user') // Redirect to the User Page
+    } else {
+      setErrorMessage('Login failed. Please try again.')
     }
+  } catch (error) {
+    console.error('Login error:', error.message)
+    setErrorMessage('Invalid username or password')
   }
+}
+
 
   return (
     <div className='login'>
       <h2>Login</h2>
       <form onSubmit={handleLogin}>
-        <input
-          type='text'
-          placeholder='Username'
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        <input
-          type='password'
-          placeholder='Password'
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <div>
+          <label htmlFor='username'>Username</label>
+          <input
+            id='username'
+            type='text'
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor='password'>Password</label>
+          <input
+            id='password'
+            type='password'
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
         <button type='submit'>Login</button>
       </form>
-      {errorMessage && <p className='error'>{errorMessage}</p>}
+      {errorMessage && <p className='error-message'>{errorMessage}</p>}
     </div>
   )
 }

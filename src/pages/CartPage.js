@@ -1,18 +1,45 @@
 import React, { useState, useEffect } from 'react'
 import { getFromLocalStorage, saveToLocalStorage } from '../utils/localStorage'
+import { getCartFromAPI, syncCartToAPI } from '../services/api'
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([])
+  const token = getFromLocalStorage('authToken') // Check if user is logged in
 
-  useEffect(() => {
-    const items = getFromLocalStorage('cart') || []
-    setCartItems(items)
-  }, [])
+useEffect(() => {
+  const fetchCart = async () => {
+    const token = getFromLocalStorage('authToken')
+    if (token) {
+      try {
+        // Fetch cart from backend for logged-in user
+        const items = await getCartFromAPI(token)
+        setCartItems(items)
+      } catch (error) {
+        console.error('Error fetching cart from API:', error)
+      }
+    } else {
+      // Fetch cart from local storage for guest user
+      const items = getFromLocalStorage('cart') || []
+      setCartItems(items)
+    }
+  }
+
+  fetchCart()
+}, [])
+
+
 
   const handleRemoveItem = (id) => {
     const updatedCart = cartItems.filter((item) => item.id !== id)
     setCartItems(updatedCart)
-    saveToLocalStorage('cart', updatedCart)
+
+    if (token) {
+      // Sync cart with backend for logged-in user
+      syncCartToAPI(token, updatedCart)
+    } else {
+      // Update local storage for guest user
+      saveToLocalStorage('cart', updatedCart)
+    }
   }
 
   const handleIncreaseQuantity = (id) => {
@@ -20,7 +47,12 @@ const CartPage = () => {
       item.id === id ? { ...item, quantity: item.quantity + 1 } : item
     )
     setCartItems(updatedCart)
-    saveToLocalStorage('cart', updatedCart)
+
+    if (token) {
+      syncCartToAPI(token, updatedCart)
+    } else {
+      saveToLocalStorage('cart', updatedCart)
+    }
   }
 
   const handleDecreaseQuantity = (id) => {
@@ -30,7 +62,12 @@ const CartPage = () => {
         : item
     )
     setCartItems(updatedCart)
-    saveToLocalStorage('cart', updatedCart)
+
+    if (token) {
+      syncCartToAPI(token, updatedCart)
+    } else {
+      saveToLocalStorage('cart', updatedCart)
+    }
   }
 
   return (
@@ -55,7 +92,12 @@ const CartPage = () => {
                 </button>
               </div>
             </div>
-            <button className='remove-button' onClick={() => handleRemoveItem(item.id)}>Remove</button>
+            <button
+              className='remove-button'
+              onClick={() => handleRemoveItem(item.id)}
+            >
+              Remove
+            </button>
           </div>
         ))
       )}

@@ -3,6 +3,12 @@ export const saveToLocalStorage = (key, value) => {
 }
 
 export const getFromLocalStorage = (key) => {
-  const value = localStorage.getItem(key)
-  return value ? JSON.parse(value) : null
+  const data = localStorage.getItem(key)
+  try {
+    return data ? JSON.parse(data) : null
+  } catch (error) {
+    console.error(`Error parsing JSON from localStorage key "${key}":`, error)
+    return null // Return null if parsing fails
+  }
 }
+
