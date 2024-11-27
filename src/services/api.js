@@ -166,8 +166,6 @@ export const getFromLocalStorage = (key) => {
   }
 }
 
-
-
 export const saveToLocalStorage = (key, value) => {
   localStorage.setItem(key, JSON.stringify(value))
 }
@@ -184,7 +182,6 @@ export const getAuthenticatedUser = async (token) => {
     return null
   }
 }
-
 
 // Axios Instance with Token Refreshing
 const axiosInstance = axios.create()

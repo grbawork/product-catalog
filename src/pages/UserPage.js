@@ -43,6 +43,7 @@ useEffect(() => {
         <p>Please log in to view your profile.</p>
       )}
     </div>
+
   )
 }
 
