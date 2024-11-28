@@ -1,34 +1,17 @@
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import CartPage from './pages/CartPage'
 import Users from './pages/Users'
 import UserPage from './pages/UserPage'
-import './styles/main.scss'
 
 const App = () => {
   return (
     <Router>
       <div className='app'>
-        <nav className='navbar'>
-          <Link to='/' className='nav-link'>
-            Home
-          </Link>
-          <Link to='/login' className='nav-link'>
-            Login
-          </Link>
-          <Link to='/cart' className='nav-link'>
-            Cart
-          </Link>
-          <Link to='/users' className='nav-link'>
-            Users
-          </Link>
-          <Link to='/user' className='nav-link'>
-            Profile
-          </Link>
-        </nav>
-
+        <Navbar />
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/login' element={<Login />} />
