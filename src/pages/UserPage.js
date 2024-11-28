@@ -10,7 +10,7 @@ useEffect(() => {
     const token = getFromLocalStorage('authToken')
     if (token) {
       try {
-        const userData = await getAuthenticatedUser(token) // Fetch user data
+        const userData = await getAuthenticatedUser(token)
         setUser(userData)
       } catch (error) {
         console.error('Error fetching user data:', error)
@@ -28,7 +28,7 @@ useEffect(() => {
   const handleLogout = () => {
     localStorage.removeItem('authToken')
     alert('Logged out successfully!')
-    window.location.href = '/login' // Redirect after logout
+    window.location.href = '/login'
   }
 
   return (

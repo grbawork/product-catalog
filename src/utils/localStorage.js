@@ -8,7 +8,7 @@ export const getFromLocalStorage = (key) => {
     return data ? JSON.parse(data) : null
   } catch (error) {
     console.error(`Error parsing JSON from localStorage key "${key}":`, error)
-    return null // Return null if parsing fails
+    return null
   }
 }
 

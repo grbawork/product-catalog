@@ -5,13 +5,12 @@ import Login from './pages/Login'
 import CartPage from './pages/CartPage'
 import Users from './pages/Users'
 import UserPage from './pages/UserPage'
-import './styles/main.scss' // Ensure global styles are imported
+import './styles/main.scss'
 
 const App = () => {
   return (
     <Router>
       <div className='app'>
-        {/* Navigation Bar */}
         <nav className='navbar'>
           <Link to='/' className='nav-link'>
             Home
@@ -30,7 +29,6 @@ const App = () => {
           </Link>
         </nav>
 
-        {/* Routes */}
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/login' element={<Login />} />

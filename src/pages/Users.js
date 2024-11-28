@@ -58,7 +58,7 @@ const Users = () => {
           placeholder='Search users...'
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={handleKeyDown} // Listen for Enter key press
+          onKeyDown={handleKeyDown}
         />
         <button onClick={handleSearch}>Search</button>
       </div>

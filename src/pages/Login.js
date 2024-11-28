@@ -1,21 +1,21 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom' // Import useNavigate
+import { useNavigate } from 'react-router-dom'
 import { loginUser } from '../services/api'
 
 const Login = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
-  const navigate = useNavigate() // Initialize useNavigate
+  const navigate = useNavigate()
 
 const handleLogin = async (e) => {
   e.preventDefault()
 
   try {
-    const response = await loginUser(username, password) // Call login API
+    const response = await loginUser(username, password)
     if (response.accessToken) {
       console.log('Login successful. Redirecting to User Page...')
-      navigate('/user') // Redirect to the User Page
+      navigate('/user')
     } else {
       setErrorMessage('Login failed. Please try again.')
     }

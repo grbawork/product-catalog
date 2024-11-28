@@ -6,7 +6,7 @@ import {
 } from '../services/api'
 import Pagination from '../components/Pagination'
 import Modal from '../components/Modal'
-import ProductCard from '../components/ProductCard' // Import the reusable component
+import ProductCard from '../components/ProductCard'
 import '../styles/main.scss'
 import { saveToLocalStorage, getFromLocalStorage } from '../utils/localStorage'
 
@@ -107,6 +107,15 @@ const Home = () => {
     setCurrentPage(1)
   }
 
+  const resetFilters = () => {
+    setSelectedCategory('')
+    setPriceRange('')
+    setSortOption('')
+    setFilteredProducts(products)
+    setCurrentPage(1)
+  }
+
+
   return (
     <div className='home'>
       <div className='search-bar'>
@@ -156,6 +165,8 @@ const Home = () => {
           <option value='name-asc'>Name: A-Z</option>
           <option value='name-desc'>Name: Z-A</option>
         </select>
+
+        <button onClick={resetFilters}>Reset Filters</button>
       </div>
 
       <div className='product-grid'>
