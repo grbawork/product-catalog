@@ -1,75 +1,82 @@
-<<<<<<< HEAD
-# Getting Started with Create React App
+# Product Catalog
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A Single Page Application (SPA) built with React for browsing a product catalog with filtering, sorting, and pagination.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **Product Grid**: Displays products with image, name, price, buttons and a truncated description.
+- **Filtering**: Filter products by category and price range.
+- **Sorting**: Sort products by:
+  - Price (ascending and descending)
+  - Name (alphabetical order)
+- **Search**: Search for products by name.
+- **Pagination**: Display products with 20 items per page.
+- **Cart**:
+  - Add products to the cart.
+  - Persist cart items using local storage.
+  - Differentiate between guest and logged-in users.
+- **Authentication**:
+  - User login with JWT token management.
+  - Redirect users to their profile after login.
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Frontend**: React
+- **Styling**: SCSS
+- **State Management**: React hooks (`useState`, `useEffect`)
+- **API**: DummyJSON (mock API for products, categories, users, and authentication)
+- **Local Storage**: Used to manage cart data for guest users.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Project Structure
 
-### `npm test`
+src/
+├── components/
+│   ├── Cart.js
+│   ├── Modal.js
+│   ├── Navbar.js
+│   ├── Pagination.js
+│   ├── ProductCard.js
+│   └── SearchBar.js
+├── hooks/
+│   └── usePagination.js
+├── pages/
+│   ├── CartPage.js
+│   ├── Home.js
+│   ├── Login.js
+│   ├── UserPage.js
+│   └── Users.js
+├── services/
+│   └── api.js
+├── styles/
+│   └── main.scss
+├── utils/
+│   └── localStorage.js
+├── App.js
+├── App.test.js
+├── index.css
+├── index.js
+├── reportWebVitals.js
+└── setupTests.js
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Installation
 
-### `npm run build`
+1. Clone the repository:
+    git clone https://github.com/grbawork/product-catalog
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+2. Navigate to the project directory:
+    cd product-catalog
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3. Install dependencies:
+    npm install
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+4. Start the development server:
+    npm start
 
-### `npm run eject`
+## Deployment
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+1. Build the project for production:
+    npm run build
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Contributing
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-=======
-# product-catalog
-SPA that displays a product catalog with advanced filtering and sorting capabilities
->>>>>>> 77dd55b3dd23f5a8c295470a415861dbeb7d8b69
+    Feel free to fork this repository and submit pull requests for improvements.
